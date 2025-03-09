@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.mayan.sistema_financeiro.enums.TransactionType;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -32,10 +34,19 @@ public class Transaction implements Serializable {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    @Enumerated(EnumType.STRING)
     private TransactionType type;
 
+    @NotNull(message = "O valor total não pode ser nulo")
+    @Range(min = 0)
     private Double totalValue;
+
+    @NotNull(message = "O valor total de desconto não pode ser nulo")
+    @Range(min = 0)
     private Double totalDiscount;
+
+    @NotNull(message = "O valor final não pode ser nulo")
+    @Range(min = 0)
     private Double finalValue;
 
     private PaymentMethod paymentMethod;

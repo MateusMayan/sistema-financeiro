@@ -43,6 +43,7 @@ public class Person implements Serializable {
     @Enumerated(EnumType.STRING)
     private PersonType type;
 
+    @NotNull
     private Boolean active = true;
 
     @CreatedDate

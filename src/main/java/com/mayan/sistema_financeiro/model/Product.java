@@ -2,6 +2,8 @@ package com.mayan.sistema_financeiro.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,12 +23,27 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "O nome não pode ser nulo")
     private String name;
+
+    @NotNull(message = "O tipo não pode ser nulo")
     private String type;
+
+    @NotNull(message = "A categoria não pode ser nula")
     private String category;
+
+    @NotNull(message = "A marca não pode ser nulo")
     private String brand;
+
+    @NotNull(message = "A quantidade em estoque não pode ser nula")
+    @Range(min = 0)
     private int amountStock;
+
+    @NotNull(message = "O valor de venda não pode ser nulo")
+    @Range(min = 0)
     private Double salesValue;
+
+    @NotNull
     private boolean active = true;
 
     @CreatedDate
