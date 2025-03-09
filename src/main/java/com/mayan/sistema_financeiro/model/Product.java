@@ -1,16 +1,19 @@
 package com.mayan.sistema_financeiro.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public abstract class Product implements Serializable {
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+public class Product implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -22,28 +25,41 @@ public abstract class Product implements Serializable {
     private String type;
     private String category;
     private String brand;
+    private int amountStock;
     private Double salesValue;
-    private boolean active;
+    private boolean active = true;
 
-    @JsonFormat(pattern = "dd/MM/yyyy:HH:mm:ss")
-    private Date createdAt;
-    @JsonFormat(pattern = "dd/MM/yyyy:HH:mm:ss")
-    private Date updatedAt;
+    @CreatedDate
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @LastModifiedDate
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Product() {
         super();
     }
 
-    public Product(Integer id, String name, String type, String category, String brand, Double salesValue, boolean active, Date createdAt, Date updatedAt) {
+    public Product(Integer id, String name, String type, String category, String brand, int amountStock, Double salesValue) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.category = category;
         this.brand = brand;
+        this.amountStock = amountStock;
         this.salesValue = salesValue;
-        this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public void setId(Integer id) {
@@ -86,6 +102,14 @@ public abstract class Product implements Serializable {
         return brand;
     }
 
+    public void setAmountStock(int amountStock) {
+        this.amountStock = amountStock;
+    }
+
+    public int getAmountStock() {
+        return amountStock;
+    }
+
     public void setSalesValue(Double salesValue) {
         this.salesValue = salesValue;
     }
@@ -102,19 +126,19 @@ public abstract class Product implements Serializable {
         return active;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 

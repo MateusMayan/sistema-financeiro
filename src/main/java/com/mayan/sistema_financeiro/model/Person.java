@@ -1,51 +1,79 @@
 package com.mayan.sistema_financeiro.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.mayan.sistema_financeiro.utils.ValidCpfCnpj;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.mayan.sistema_financeiro.enums.PersonType;
+
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Entity
-public abstract class Person implements Serializable {
+@EntityListeners(AuditingEntityListener.class)
+public class Person implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @NotNull(message = "O nome não pode ser nulo")
     private String name;
 
+    @Email
+    @NotNull(message = "Email não pode estar vazio")
     @Column(unique = true)
     private String email;
 
+    @ValidCpfCnpj
+    @NotNull(message = "Documento não pode estar vazio")
     @Column(unique = true)
     private String document;
-    private PersonType personType;
+    @Enumerated(EnumType.STRING)
+    private PersonType type;
 
-    private Boolean active;
+    private Boolean active = true;
 
-    @JsonFormat(pattern = "dd/MM/yyyy:HH:mm:ss")
-    private Date createdAt;
-    @JsonFormat(pattern = "dd/MM/yyyy:HH:mm:ss")
-    private Date updatedAt;
+    @CreatedDate
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
+    @LastModifiedDate
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Person() {
         super();
     }
 
-    public Person(Integer id, String name, String email, String document, Boolean active, Date createdAt, Date updatedAt, PersonType personType) {
+    public Person(Integer id, String name, String email, String document, PersonType type) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.document = document;
-        this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.personType = personType;
+        this.type = type;
     }
 
     public void setId(Integer id) {
@@ -80,12 +108,12 @@ public abstract class Person implements Serializable {
         return document;
     }
 
-    public void setPersonType(PersonType personType) {
-        this.personType = personType;
+    public void setPersonType(PersonType type) {
+        this.type = type;
     }
 
     public PersonType getPersonType() {
-        return personType;
+        return type;
     }
 
     public void setActive(Boolean active) {
@@ -96,19 +124,19 @@ public abstract class Person implements Serializable {
         return active;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
